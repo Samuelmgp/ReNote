@@ -15,14 +15,14 @@ const MyNotesView = () => {
 
     return dbNotes ? (
         <MasonryList
-            style={tw`w-full h-screen`}
+            style={tw`w-full h-full`}
             data={items}
             renderItem={CardView}
             numColumns={2}
         />
     ) : (
-        <View style={tw`h-screen justify-center`}>
-            <Text style={tw`text-center text-wrap text-lg font-bold mb-4`}>
+        <View style={tw`h-full justify-center`}>
+            <Text style={tw`text-center text-lg font-bold mb-4`}>
                 You currently dont have any notes!
             </Text>
             <TouchableOpacity style={tw`w-32 py-2 rounded-lg bg-blue-500 self-center`}>
