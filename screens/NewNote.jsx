@@ -1,12 +1,9 @@
-import { Text, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 import tw from 'twrnc';
+import NoteEditior from './NoteEditior';
 
-export default function(){
+export default () => {
     return (
-        <View>
-            <Text>
-                Hello World!
-            </Text>
-        </View>
+        <NoteEditior/>
     )
 }

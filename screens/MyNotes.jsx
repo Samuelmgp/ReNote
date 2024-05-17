@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import tw from 'twrnc';
 
-const MyNotesView = () => {
+const MyNotesView = ({ navigation }) => {
     const {data: dbNotes} = useFetchNotesQuery
     const [items, setItems] = useState([])
 
@@ -25,9 +25,12 @@ const MyNotesView = () => {
             <Text style={tw`text-center text-lg font-bold mb-4`}>
                 You currently dont have any notes!
             </Text>
-            <TouchableOpacity style={tw`w-32 py-2 rounded-lg bg-blue-500 self-center`}>
+            <TouchableOpacity 
+                style={tw`w-32 py-2 rounded-lg bg-blue-500 self-center`}
+                onPress={() => navigation.navigate('New Note')}
+            >
                 <Text style={tw`text-center text-white`}>
-                    Add Note
+                    Create Note
                 </Text>
             </TouchableOpacity>
         </View>
