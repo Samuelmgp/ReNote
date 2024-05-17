@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { store } from './store';
 import 'react-native-reanimated'; 
 import CardView from './components/CardView';
+import MyNotesView from './screens/MyNotes';
 
 function App() {
   useDeviceContext(tw);
