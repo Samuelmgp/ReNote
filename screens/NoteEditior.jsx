@@ -1,51 +1,66 @@
-import { Text, Keyboard, KeyboardAvoidingView, Platform,TextInput, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
+import { Text, View, Keyboard, KeyboardAvoidingView, Platform,TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { useEffect, useState } from 'react';
 import tw from 'twrnc';
 
 const DoneButton = () => {
-    return Platform.OS === 'ios' ?
-        (
+    return (
             <TouchableOpacity
-                style={tw`w-auto h-10 rounded-lg mx-5 mt-5 justify-center bg-blue-400`}
+                style={tw`flex-initial h-10 rounded-lg justify-center bg-blue-400`}
                 onPress={Keyboard.dismiss}
             >
                 <Text style={tw`text-white text-center text-center`}>
                     Done
                 </Text>
             </TouchableOpacity>
-        ) : null
+        )
 }
 
 export default function NoteEditior () {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isFocused, setFocus] = useState(false);
+    const [isKeyboardVisible, setKeyboardVisability] = useState(false);
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+            setKeyboardVisability(true)
+        })
+
+        const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+            setKeyboardVisability(false)
+        })
+
+        return () => {
+            keyboardDidShowListener.remove()
+            keyboardDidHideListener.remove()
+        }
+    }, [])
+
+
 
     return (
-            <KeyboardAvoidingView 
-                style={tw`flex-1`}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                keyboardVerticalOffset={100}
+            
+            <View
+                style={tw`flex flex-col justify-center gap-y-1 p-3 ${isKeyboardVisible || isFocused ? 'h-[62%]' : 'h-full'}`}
             > 
-                <TextInput 
-                    style={tw`w-auto h-auto py-4 px-4 bg-gray-200 rounded-lg text-black mx-5 mt-5`}
-                    returnKeyType='done'
-                    placeholder='Title'
-                    value={title}
-                    onChangeText={(title) => setTitle(title)}
-                /> 
-                <TextInput
-                    style={tw`w-auto h-70 py-4 px-4 bg-gray-200 m-5 rounded-lg text-black text-left`}
-                    placeholder='The start of a new note...'
-                    multiline={true}
-                    value={content}
-                    scrollEnabled={true}
-                    onChangeText={(content) => setContent(content)}
-                    onFocus={() => setFocus(true)}
-                    onBlur={() => setFocus(false)}
-                />
+                    <TextInput 
+                        style={tw`flex-initial h-10 rounded-lg px-4`}
+                        returnKeyType='done'
+                        placeholder='Title'
+                        value={title}
+                        onChangeText={(title) => setTitle(title)}
+                    />  
+                
+                    <TextInput
+                        style={tw`flex-1 rounded-lg px-4`}
+                        placeholder='The start of a new note...'
+                        multiline={true}
+                        value={content}
+                        onChangeText={(content) => setContent(content)}
+                        onFocus={() => setFocus(true)}
+                        onBlur={() => setFocus(false)}
+                    /> 
                 {isFocused && <DoneButton />}
-
-            </KeyboardAvoidingView>
+            </View>
     )
 }

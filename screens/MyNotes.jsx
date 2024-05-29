@@ -2,7 +2,7 @@ import MasonryList from '@react-native-seoul/masonry-list';
 import CardView from '../components/CardView';
 import { useFetchNotesQuery } from '../db';
 import { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import tw from 'twrnc';
 
 const MyNotesView = ({ navigation }) => {
@@ -14,12 +14,18 @@ const MyNotesView = ({ navigation }) => {
     }, [])
 
     return dbNotes ? (
-        <MasonryList
-            style={tw`w-full h-full`}
-            data={items}
-            renderItem={CardView}
-            numColumns={2}
-        />
+        <View>
+            <TextInput
+                style={tw`w-full`}
+                placeholder='Search'
+            />
+            <MasonryList
+                style={tw`w-full h-full`}
+                data={items}
+                renderItem={CardView}
+                numColumns={2}
+            />
+        </View>
     ) : (
         <View style={tw`h-full justify-center`}>
             <Text style={tw`text-center text-lg font-bold mb-4`}>
