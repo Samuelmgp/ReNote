@@ -1,5 +1,6 @@
 import { Text, View, Keyboard, KeyboardAvoidingView, Platform,TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { useEffect, useState } from 'react';
+import Icon from 'react-native-vector-icons/EvilIcons'
 import tw from 'twrnc';
 
 const DoneButton = () => {
@@ -15,13 +16,14 @@ const DoneButton = () => {
         )
 }
 
-export default function NoteEditior () {
+export default function NoteEditior ( { navigation } ) {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isFocused, setFocus] = useState(false);
     const [isKeyboardVisible, setKeyboardVisability] = useState(false);
 
     useEffect(() => {
+
         const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
             setKeyboardVisability(true)
         })
@@ -36,12 +38,23 @@ export default function NoteEditior () {
         }
     }, [])
 
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+            <TouchableOpacity style={tw`flex flex-row gap-x-1`}>
+              <Text style={tw`text-base bg-white text-red-600`}>Undo</Text>
+              <Icon name='undo' size={25} color={'red'} />
+            </TouchableOpacity>
+            ), 
+    });
+        
+    }, [navigation])
 
 
     return (
             
             <View
-                style={tw`flex flex-col justify-center gap-y-1 p-3 ${isKeyboardVisible || isFocused ? 'h-[62%]' : 'h-full'}`}
+                style={tw`flex flex-col justify-center gap-y-1 p-3 ${isKeyboardVisible || isFocused ? 'h-[55%]' : 'h-full'}`}
             > 
                     <TextInput 
                         style={tw`flex-initial h-10 rounded-lg px-4`}

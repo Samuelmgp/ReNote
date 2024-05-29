@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import tw from 'twrnc';
 
-const MyNotesView = ({ navigation }) => {
+export default function Home ({ navigation }) {
     const {data: dbNotes} = useFetchNotesQuery
     const [items, setItems] = useState([])
 
@@ -44,5 +44,3 @@ const MyNotesView = ({ navigation }) => {
 
 
 }
-
-export default MyNotesView
