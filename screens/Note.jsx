@@ -2,6 +2,9 @@ import { Text, View, Keyboard, KeyboardAvoidingView, Platform,TextInput, Touchab
 import { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/EvilIcons'
 import tw from 'twrnc';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateContent, updateTitle } from '../components/noteSlice';
+import { ActionCreators } from 'redux-undo';
 
 const DoneButton = () => {
     return (
@@ -17,8 +20,11 @@ const DoneButton = () => {
 }
 
 export default function NoteEditior ( { navigation } ) {
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
+    const dispatch = useDispatch()
+
+    const title = useSelector(state => state.note.present.title)
+    const content = useSelector(state => state.note.present.content)
+
     const [isFocused, setFocus] = useState(false);
     const [isKeyboardVisible, setKeyboardVisability] = useState(false);
 
@@ -41,7 +47,10 @@ export default function NoteEditior ( { navigation } ) {
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
-            <TouchableOpacity style={tw`flex flex-row gap-x-1`}>
+            <TouchableOpacity 
+                style={tw`flex flex-row gap-x-1`}
+                onPress={() => (dispatch(ActionCreators.undo()))}
+            >
               <Text style={tw`text-base bg-white text-red-600`}>Undo</Text>
               <Icon name='undo' size={25} color={'red'} />
             </TouchableOpacity>
@@ -61,7 +70,7 @@ export default function NoteEditior ( { navigation } ) {
                         returnKeyType='done'
                         placeholder='Title'
                         value={title}
-                        onChangeText={(title) => setTitle(title)}
+                        onChangeText={(title) => dispatch(updateTitle(title))}
                     />  
                 
                     <TextInput
@@ -69,7 +78,7 @@ export default function NoteEditior ( { navigation } ) {
                         placeholder='The start of a new note...'
                         multiline={true}
                         value={content}
-                        onChangeText={(content) => setContent(content)}
+                        onChangeText={(content) => dispatch(updateContent(content))}
                         onFocus={() => setFocus(true)}
                         onBlur={() => setFocus(false)}
                     /> 
