@@ -6,15 +6,17 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import tw from 'twrnc';
 
 export default function Home ({ navigation }) {
-    const {data: dbNotes} = useFetchNotesQuery
+    const {data: dbNotes, error, isLoading} = useFetchNotesQuery('')
     const [items, setItems] = useState([])
 
     useEffect(() => {
         setItems(dbNotes)
     }, [])
 
-    return dbNotes ? (
-        <View>
+    return length(dbNotes) ? (
+        /* Display this when user has saved notes */
+        <View style={tw`h-full justify-center`}>
+            <Text>My Notes</Text>
             <TextInput
                 style={tw`w-full`}
                 placeholder='Search'
@@ -27,6 +29,7 @@ export default function Home ({ navigation }) {
             />
         </View>
     ) : (
+        /* If There are no notes display this */
         <View style={tw`h-full justify-center`}>
             <Text style={tw`text-center text-lg font-bold mb-4`}>
                 You currently dont have any notes!
