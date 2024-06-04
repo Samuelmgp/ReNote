@@ -13,7 +13,7 @@ export default function Home ({ navigation }) {
         setItems(dbNotes)
     }, [])
 
-    return length(dbNotes) ? (
+    return dbNotes == [] ? (
         /* Display this when user has saved notes */
         <View style={tw`h-full justify-center`}>
             <Text>My Notes</Text>

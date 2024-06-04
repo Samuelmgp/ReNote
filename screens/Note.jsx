@@ -7,41 +7,41 @@ import { updateContent, updateTitle } from '../components/noteSlice';
 import { ActionCreators } from 'redux-undo';
 import { useAddNoteMutation } from '../db';
 
-const DoneButton = () => {
-    return (
-            <TouchableOpacity
-                style={tw`flex-initial h-10 rounded-lg justify-center bg-blue-400`}
-                onPress={Keyboard.dismiss}
-            >
-                <Text style={tw`text-white text-center text-center`}>
-                    Done
-                </Text>
-            </TouchableOpacity>
-        )
-}
-
 export default function NoteEditior ( { navigation } ) {
     const dispatch = useDispatch()
     const [ addNote, { data, error } ] = useAddNoteMutation();
+    
+    const undoableTitle = useSelector(state => state.note.present.title)
+    const undoableContent = useSelector(state => state.note.present.content)
 
-    const title = useSelector(state => state.note.present.title)
-    const content = useSelector(state => state.note.present.content)
+    const [title, setTitle] = useState('')
+    const [content, setContent] = useState('')
 
     const [isFocused, setFocus] = useState(false);
     const [isKeyboardVisible, setKeyboardVisability] = useState(false);
 
-    const handleReturn = () => {
-        // Navigate Back
-        console.log("values:", title, content)
-        if (title !== '' || content !== ''){
-            console.log("Title or content not empty:",title, content)
-            addNote(title, content)
-        }
-        navigation.goBack()
+    const handleFinish = () => {
+        Keyboard.dismiss()
+        dispatch(updateTitle(title))
+        dispatch(updateContent(content)) 
     }
 
-    useEffect(() => {
+    /* Done Button UI Component Single Use */
+    const DoneButton = () => {
+        return (
+                <TouchableOpacity
+                    style={tw`flex-initial h-10 rounded-lg justify-center bg-blue-400`}
+                    onPress={handleFinish}
+                >
+                    <Text style={tw`text-white text-center text-center`}>
+                        Done
+                    </Text>
+                </TouchableOpacity>
+            )
+    }
 
+    /* Keyboard Listeners (Predominantly for Resizing View) */
+    useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
             setKeyboardVisability(true)
         })
@@ -56,12 +56,20 @@ export default function NoteEditior ( { navigation } ) {
         }
     }, [])
 
+    /* Navigation Undo Button Logic */
+    const handleUndo = () => {
+        dispatch(ActionCreators.undo())
+        setTitle(undoableTitle)
+        setContent(undoableContent)
+    }
+    
+    /* Top Navigation Bar */
     useEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
                 <TouchableOpacity
                     style={tw`flex flex-row items-center`}
-                    onPress={handleReturn}
+                    onPress={navigation.goBack}
                 >
                     <Icon name='chevron-left' size={35} color={'blue'} />
                     <Text style={tw`text-base text-blue-600`}>My Notes</Text>
@@ -70,17 +78,17 @@ export default function NoteEditior ( { navigation } ) {
             headerRight: () => (
             <TouchableOpacity 
                 style={tw`flex flex-row gap-x-1 items-center`}
-                onPress={() => (dispatch(ActionCreators.undo()))}
+                onPress={handleUndo}
             >
               <Text style={tw`text-base text-red-600`}>Undo</Text>
               <Icon name='undo' size={25} color={'red'} />
             </TouchableOpacity>
             ), 
-    });
-        
+        });
     }, [navigation])
 
 
+    /* UI Portion */
     return (
             
             <View
@@ -91,7 +99,7 @@ export default function NoteEditior ( { navigation } ) {
                         returnKeyType='done'
                         placeholder='Title'
                         value={title}
-                        onChangeText={(title) => dispatch(updateTitle(title))}
+                        onChangeText={(title) => setTitle(title)}
                     />  
                 
                     <TextInput
@@ -99,7 +107,7 @@ export default function NoteEditior ( { navigation } ) {
                         placeholder='The start of a new note...'
                         multiline={true}
                         value={content}
-                        onChangeText={(content) => dispatch(updateContent(content))}
+                        onChangeText={(content) => setContent(content)}
                         onFocus={() => setFocus(true)}
                         onBlur={() => setFocus(false)}
                     /> 
