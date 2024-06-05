@@ -1,6 +1,6 @@
 import MasonryList from '@react-native-seoul/masonry-list';
 import CardView from '../components/CardView';
-import { useFetchNotesQuery, useClearDatabaseMutation } from '../db';
+import { useFetchNotesQuery, useClearDatabaseMutation, useSearchNotesQuery } from '../db';
 import { useEffect, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import tw from 'twrnc';
@@ -13,7 +13,9 @@ const emptyNote = {
 }
 
 export default function Home ({ navigation }) {
-    const { data: fetchedNoteData, error: fnError, isLoading } = useFetchNotesQuery('');
+
+    const [search, setSearch] = useState('')
+    const { data: searchData, error: searchError, isLoading: isLoading } = useSearchNotesQuery(search)
     const [ clearDatabase, {data: msg, error: e}] = useClearDatabaseMutation();
     const [items, setItems] = useState([]);
 
@@ -33,11 +35,10 @@ export default function Home ({ navigation }) {
     }, [navigation])
 
     useEffect(() => {
-        if (fetchedNoteData && fetchedNoteData[0]) {
-            setItems(fetchedNoteData[0]);
-            console.log(fetchedNoteData[0])
+        if (searchData) {
+            setItems(searchData);
         }
-    }, [fetchedNoteData]);
+    }, [searchData]);
 
     if (isLoading) {
         return (
@@ -47,7 +48,7 @@ export default function Home ({ navigation }) {
         );
     }
 
-    if (fnError) {
+    if (searchError) {
         return (
             <View style={tw`h-full justify-center items-center`}>
                 <Text style={tw`text-red-500`}>Failed to load notes: {fnError.message}</Text>
@@ -55,13 +56,15 @@ export default function Home ({ navigation }) {
         );
     }
 
-    return items.length > 0 ? (
+    return (items.length > 0 || search != '') ? (
         /* Display this when user has saved notes */
         <View style={tw`h-full justify-center`}>
             <TextInput
                 style={tw`w-full p-4 bg-gray-200 rounded-lg`}
                 placeholder='Search'
                 returnKeyType='search'
+                onChangeText={setSearch}
+                value={search}
             />
             <MasonryList
                 style={tw`w-full mt-2`}
