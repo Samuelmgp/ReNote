@@ -72,7 +72,14 @@ export const dbApi = createApi({
       },
       invalidatesTags: ['Notes'],
     }),
+    clearDatabase: build.mutation({
+      async queryFn() {
+        await AsyncStorage.removeItem('notes')
+        return {data: 'Notes Cleared'}
+      },
+      invalidatesTags: ["Notes"]
+    }),
   }),
 })
 
-export const { useFetchNotesQuery, useSearchNotesQuery, useAddNoteMutation, useUpdateNoteMutation, useDeleteNoteMutation } = dbApi
+export const { useFetchNotesQuery, useSearchNotesQuery, useAddNoteMutation, useUpdateNoteMutation, useDeleteNoteMutation, useClearDatabaseMutation } = dbApi

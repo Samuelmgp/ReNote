@@ -1,15 +1,16 @@
-import { Text, View, Keyboard, KeyboardAvoidingView, Platform,TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { Text, View, Keyboard, TextInput, TouchableOpacity } from 'react-native';
 import { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/EvilIcons'
 import tw from 'twrnc';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateContent, updateTitle } from '../components/noteSlice';
 import { ActionCreators } from 'redux-undo';
-import { useAddNoteMutation } from '../db';
+import { useAddNoteMutation, useUpdateNoteMutation } from '../db';
 
 export default function NoteEditior ( { navigation } ) {
     const dispatch = useDispatch()
-    const [ addNote, { data, error } ] = useAddNoteMutation();
+    const [ addNote, { data: addNoteData, error: addError, isLoading: addIsLoading } ] = useAddNoteMutation();
+    const [ updateNote ] = useUpdateNoteMutation()
     
     const undoableTitle = useSelector(state => state.note.present.title)
     const undoableContent = useSelector(state => state.note.present.content)
@@ -20,11 +21,21 @@ export default function NoteEditior ( { navigation } ) {
     const [isFocused, setFocus] = useState(false);
     const [isKeyboardVisible, setKeyboardVisability] = useState(false);
 
+    /* For Done Button OnPress */
     const handleFinish = () => {
         Keyboard.dismiss()
         dispatch(updateTitle(title))
         dispatch(updateContent(content)) 
+        if (addNoteData == undefined && (title !== '' || content !== '')){
+            console.log("Values: ",title, "|", content)
+            console.log("Creating new Note!")
+            addNote({title: title, content: content})
+            console.log( addNoteData ? `${addNoteData.id} | ${addNoteData.title} | ${addNoteData.content}` : `Failed! ${addError}`)
+        }
     }
+
+    /* Saving Note Data */
+    
 
     /* Done Button UI Component Single Use */
     const DoneButton = () => {

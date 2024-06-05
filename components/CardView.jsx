@@ -1,16 +1,18 @@
 import {Text, TouchableOpacity} from 'react-native'
 import tw from "twrnc";
 
-const CardView = ({item}) => {
-    return (
-        <TouchableOpacity style={tw`bg-yellow-200 rounded-md w-auto`}>
-            <Text style={tw`text-lg font-bold mx-auto mt-5px text-wrap`}>
+const CardView = ({ item }) => {
+    return item ? (
+        <TouchableOpacity style={tw`flex flex-col bg-yellow-200 rounded-md m-[2%]`}>
+            <Text style={tw`text-lg font-bold p-2 text-black`}>
                 {item.title}
             </Text>
-            <Text style={tw`text-base mx-auto hyphens-auto`}>
+            <Text style={tw`text-base text-black p-2`}>
                 {item.content}
             </Text>
         </TouchableOpacity>
+    ) : (
+        <></>
     )
 }
 
