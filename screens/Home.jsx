@@ -1,13 +1,30 @@
 import MasonryList from '@react-native-seoul/masonry-list';
 import CardView from '../components/CardView';
-import { useFetchNotesQuery } from '../db';
+import { useFetchNotesQuery, useClearDatabaseMutation } from '../db';
 import { useEffect, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import tw from 'twrnc';
+import Icon from 'react-native-vector-icons/EvilIcons';
 
 export default function Home ({ navigation }) {
     const { data: fetchedNoteData, error: fnError, isLoading } = useFetchNotesQuery('');
+    const [ clearDatabase, {data: msg, error: e}] = useClearDatabaseMutation();
     const [items, setItems] = useState([]);
+
+    /* Top Navigation Bar */
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+            <TouchableOpacity
+                style={tw`flex flex-row justify-center items-center`}
+                onPress={clearDatabase}
+            >
+                <Text style={tw`text-red-600 text-base`}>Delete All</Text>
+                <Icon name='trash' size={25} color={'red'} />
+            </TouchableOpacity>
+            ), 
+        });
+    }, [navigation])
 
     useEffect(() => {
         if (fetchedNoteData) {
@@ -32,7 +49,7 @@ export default function Home ({ navigation }) {
         );
     }
 
-    return items.length > 0 ? (
+    return items[0].length > 0 ? (
         /* Display this when user has saved notes */
         <View style={tw`h-full justify-center`}>
             <TextInput

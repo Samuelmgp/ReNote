@@ -14,7 +14,7 @@ function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Home'>
+      <Stack.Navigator initialRouteName='My Notes'>
           <Stack.Screen name="My Notes" component={HomeScreen} />
           <Stack.Screen name="New Note" component={Note} />
           <Stack.Screen name="Note" component={Note} />
