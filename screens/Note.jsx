@@ -12,8 +12,10 @@ export default function NoteEditior ( { navigation, note } ) {
     const [ addNote, { data: addNoteData, error: addError, isLoading: addIsLoading } ] = useAddNoteMutation();
     const [ updateNote ] = useUpdateNoteMutation()
     
+    /*
     const undoableTitle = useSelector(state => state.note.present.title)
     const undoableContent = useSelector(state => state.note.present.content)
+    */
 
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
@@ -24,8 +26,10 @@ export default function NoteEditior ( { navigation, note } ) {
     /* For Done Button OnPress */
     const handleFinish = () => {
         Keyboard.dismiss()
+        /*
         dispatch(updateTitle(title))
         dispatch(updateContent(content)) 
+        */
         if (addNoteData == undefined && (title !== '' || content !== '')){
             console.log("Values: ",title, "|", content)
             console.log("Creating new Note!")
@@ -70,8 +74,10 @@ export default function NoteEditior ( { navigation, note } ) {
     /* Navigation Undo Button Logic */
     const handleUndo = () => {
         dispatch(ActionCreators.undo())
+        /*
         setTitle(undoableTitle)
         setContent(undoableContent)
+        */
     }
     
     /* Top Navigation Bar */
@@ -93,7 +99,7 @@ export default function NoteEditior ( { navigation, note } ) {
                     <Icon name='chevron-left' size={35} color={'blue'} />
                     <Text style={tw`text-base text-blue-600`}>My Notes</Text>
                 </TouchableOpacity>
-            ),
+            ),/*
             headerRight: () => (
             <TouchableOpacity 
                 style={tw`flex flex-row gap-x-1 items-center`}
@@ -102,7 +108,7 @@ export default function NoteEditior ( { navigation, note } ) {
               <Text style={tw`text-base text-red-600`}>Undo</Text>
               <Icon name='undo' size={25} color={'red'} />
             </TouchableOpacity>
-            ), 
+            ), */
         });
     }, [navigation])
 
