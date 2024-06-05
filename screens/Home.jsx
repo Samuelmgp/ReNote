@@ -15,6 +15,10 @@ export default function Home ({ navigation }) {
 
     /* Top Navigation Bar */
     useEffect(() => {
+        /* When mounted modify the navigation bar
+            - [DeleteAll] Button on the right side
+                - Utilizies (clearDatabase) method which uses useClearDatabaseMutation
+        */
         navigation.setOptions({
             headerRight: () => (
             <TouchableOpacity
@@ -29,11 +33,17 @@ export default function Home ({ navigation }) {
     }, [navigation])
 
     useEffect(() => {
+        /* 
+            As Search updates, update the searchData being displayed
+        */
         if (searchData) {
             setItems(searchData);
         }
     }, [searchData]);
 
+    /* 
+        Show a loading indicator if isLoading is true
+    */
     if (isLoading) {
         return (
             <View style={tw`h-full justify-center items-center`}>
@@ -42,14 +52,22 @@ export default function Home ({ navigation }) {
         );
     }
 
+    /*
+        Inform User of any errors that occur in search process 
+    */
     if (searchError) {
         return (
             <View style={tw`h-full justify-center items-center`}>
-                <Text style={tw`text-red-500`}>Failed to load notes: {fnError.message}</Text>
+                <Text style={tw`text-red-500`}>Failed to load notes: {searchError.message}</Text>
             </View>
         );
     }
 
+    
+    /*
+        UI Portion: Which view to display if there are notes
+        And which one if there are no notes
+   */
     return (items.length > 0 || search != '') ? (
         /* Display this when user has saved notes */
         <View style={tw`h-full justify-center`}>

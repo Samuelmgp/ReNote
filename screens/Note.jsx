@@ -47,6 +47,10 @@ const NoteEditor = ( { route, navigation } ) => {
 
     /* Keyboard Listeners (Predominantly for Resizing View) */
     useEffect(() => {
+        /*
+            When the keyboard is present Keyboard fires an event "keyboardDidShow"
+            Which is tied to the setKeyboardVisability state
+        */
         const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
             setKeyboardVisability(true)
         })
@@ -55,6 +59,10 @@ const NoteEditor = ( { route, navigation } ) => {
             setKeyboardVisability(false)
         })
 
+        /*
+            When unmounting remove the listeners as they are no longer
+            neccessary. 
+        */
         return () => {
             keyboardDidShowListener.remove()
             keyboardDidHideListener.remove()
@@ -86,8 +94,39 @@ const NoteEditor = ( { route, navigation } ) => {
     
     /* Top Navigation Bar */
     useEffect(() => {
+        /*
+            Set the navigation bar elements: 
+            - If the Note has a title:
+                [Deprecated] - Display the title otherwise New Note
+                [New] - Note is automatically set to "Untitled Note"
+            - Left Side:
+                If (New Note without Content):
+                    - Display "X Cancel" in Red
+                Otherwise:
+                    - Display "< My Notes" in Blue
+                OnPress - Handled by (handleReturn)
+            - Right Side:
+                [Visible] When content is not empty
+                OnPress - Handled by (handleDelete)
+            
+            [Dev Notes]: When Cancel is displayed changes are not saved
+            The note remains unchanged. Notes cannot be saved without content.
+            However, they can be saved without a title -> as the title is automatically
+            set to "Untitled Note"
+
+            Interesting thing that I learned in this part when trying to figure out
+            how to save & update a note is that if note is not a dependacy in this
+            useEffect, then when saveNote() is called title & content wont be 
+            synced and despite the previous useEffect updating note continuously 
+            when title or content are modified, it wont be up to date prior to the
+            goBack, despite the await & async declarations.
+
+            This is my second time working with React, but in my first experience
+            it wasn't as in depth, I am still a little puzzled by the cause.
+
+        */
         navigation.setOptions({
-            headerTitle: note.title != '' ? note.title : "New Note",
+            headerTitle: note.title,
             headerLeft: () => (
                 <TouchableOpacity
                     style={tw`flex flex-row items-center`}
@@ -141,6 +180,12 @@ const NoteEditor = ( { route, navigation } ) => {
                         onFocus={() => setFocus(true)}
                         onBlur={() => setFocus(false)}
                     /> 
+                    {/*
+                    Done Button is only visible when content is focused
+                    This is because on iOS keyboard doesn't have dismiss
+                    button for whatever reason. And I didn't want to get rid
+                    of the return key, so I made a custome button for this
+                    */}
                 {isFocused && <DoneButton />}
             </View>
     )

@@ -73,9 +73,16 @@ export const dbApi = createApi({
       invalidatesTags: ['Notes'],
     }),
     clearDatabase: build.mutation({
+      /*
+        Nothing special here: just followed along with how the delete note works
+        Then realized by setting it to an empty array it would clear the data.
+        Returning deleted notes
+      */
       async queryFn() {
+        const serializedNotes = await AsyncStorage.getItem('notes');
+        let notes = JSON.parse(serializedNotes) || [];
         await AsyncStorage.setItem('notes',JSON.stringify([]))
-        return {data: 'Notes Cleared'}
+        return {data: notes}
       },
       invalidatesTags: ["Notes"]
     }),
