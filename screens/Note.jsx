@@ -12,7 +12,7 @@ const NoteEditor = ( { route, navigation } ) => {
     const note = route.params.item;
 
     const dispatch = useDispatch()
-    const [ addNote, { data: addNoteData, error: addError, isLoading: addIsLoading } ] = useAddNoteMutation();
+    const [ addNote, { data: newNote, error: addError, isLoading: addIsLoading } ] = useAddNoteMutation();
     const [ updateNote, {data: updatedNoteData, error: updateError} ] = useUpdateNoteMutation()
     const [ deleteNote, {data: deletedNoteData, error: deleteError} ] = useDeleteNoteMutation()
     
@@ -34,16 +34,17 @@ const NoteEditor = ( { route, navigation } ) => {
         dispatch(updateTitle(title))
         dispatch(updateContent(content)) 
         */
-        if (note.id === "base" && (title !== '' || content !== '')){
+        if (note.id === "base" && newNote == undefined && (title !== '' || content !== '')){
             const date = new Date()
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
 
             addNote({title: title, content: content, created: `${month}-${day}-${year}`})
-        } else if (title !== '' || content !== ''){
-            console.log("Updating: ", title, content, note.id)
+        } else if (note.id !== "base" && (title !== '' || content !== '')){
             updateNote({id: note.id, created: note.created, content: content, title: title})
+        } else if (newNote && (title !== '' || content !== '')){
+            updateNote({id: newNote.id, created: newNote.created, content: content, title: title})
         }
     }
 
@@ -82,7 +83,7 @@ const NoteEditor = ( { route, navigation } ) => {
 
     /* Delete Note Logic */
     const handleDelete = () => {
-        deleteNote(note)
+        newNote ? deleteNote(newNote) : deleteNote(note)
         navigation.goBack()
     }
     
@@ -104,13 +105,16 @@ const NoteEditor = ( { route, navigation } ) => {
                     style={tw`flex flex-row gap-x-1 items-center`}
                     onPress={handleDelete}
                 >
-                  <Text style={tw`text-base text-red-600`}>Delete</Text>
-                  <Icon name='trash' size={25} color={'red'} />
+                  <Text style={tw`text-base text-red-600`}>
+                    { (note.id ===  "base" && newNote === undefined) ? "Cancel" : "Delete"}
+                  </Text>
+                    { (note.id ===  "base" && newNote === undefined) && <Icon name='close' size={25} color={'red'} />} 
+                    { (note.id !==  "base" || newNote !== undefined) && <Icon name='trash' size={25} color={'red'} />}
                 </TouchableOpacity>
                 ),
         });
 
-    }, [navigation])
+    }, [navigation, note, newNote])
 
 
     /* UI Portion */

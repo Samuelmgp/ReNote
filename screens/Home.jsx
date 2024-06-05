@@ -60,14 +60,14 @@ export default function Home ({ navigation }) {
         /* Display this when user has saved notes */
         <View style={tw`h-full justify-center`}>
             <TextInput
-                style={tw`w-full p-4 bg-gray-200 rounded-lg`}
+                style={tw`m-1 p-4 bg-gray-200 rounded-lg`}
                 placeholder='Search'
                 returnKeyType='search'
                 onChangeText={setSearch}
                 value={search}
             />
             <MasonryList
-                style={tw`w-full mt-2`}
+                style={tw`w-full`}
                 data={items}
                 renderItem={({ item }) => <CardView navigation={navigation} item={item} />}
                 keyExtractor={(item) => item.id}
