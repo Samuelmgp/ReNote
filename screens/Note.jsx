@@ -93,21 +93,26 @@ const NoteEditor = ( { route, navigation } ) => {
                     style={tw`flex flex-row items-center`}
                     onPress={handleReturn}
                 >
-                    <Icon name='chevron-left' size={35} color={'blue'} />
-                    <Text style={tw`text-base text-blue-600`}>My Notes</Text>
+                    { note.content != "" ? 
+                    (<Icon name='chevron-left' size={35} color={'blue'} />) 
+                    : 
+                    (<Icon name='close' size={25} color={'red'} />)}
+                    <Text style={tw`text-base ${note.content != "" ? 'text-blue-600' : 'text-red-600'}`}>
+                        { note.content != "" ? "My Notes" : "Cancel"}
+                    </Text>
                 </TouchableOpacity>
             ),
             headerRight: () => (
-                <TouchableOpacity 
+                note.content != ''
+                && 
+                (<TouchableOpacity 
                     style={tw`flex flex-row gap-x-1 items-center`}
                     onPress={handleDelete}
                 >
-                  <Text style={tw`text-base text-red-600`}>
-                    { note.content == '' ? "Cancel" : "Delete"}
-                  </Text>
-                    { (note.content != '') ? (<Icon name='trash' size={25} color={'red'} />) : (<Icon name='close' size={25} color={'red'} />)} 
-                </TouchableOpacity>
-                ),
+                    <Text style={tw`text-base text-red-600`}>Delete</Text>
+                    <Icon name='trash' size={25} color={'red'} />
+                </TouchableOpacity>)
+            ),
         });
 
     }, [navigation, note])

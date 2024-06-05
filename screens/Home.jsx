@@ -1,6 +1,6 @@
 import MasonryList from '@react-native-seoul/masonry-list';
 import CardView from '../components/CardView';
-import { useFetchNotesQuery, useClearDatabaseMutation, useSearchNotesQuery } from '../db';
+import { useClearDatabaseMutation, useSearchNotesQuery } from '../db';
 import { useEffect, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import tw from 'twrnc';
@@ -10,7 +10,7 @@ export default function Home ({ navigation }) {
 
     const [search, setSearch] = useState('')
     const { data: searchData, error: searchError, isLoading: isLoading } = useSearchNotesQuery(search)
-    const [ clearDatabase, {data: msg, error: e}] = useClearDatabaseMutation();
+    const [ clearDatabase ] = useClearDatabaseMutation();
     const [items, setItems] = useState([]);
 
     /* Top Navigation Bar */
