@@ -70,7 +70,7 @@ const NoteEditor = ( { route, navigation } ) => {
     useEffect(() => {
         setNote({
             id: note.id,
-            title: title,
+            title: (title === "" ? "Untitled Note" : title),
             content: content,
             created: note.created
         })
@@ -78,7 +78,9 @@ const NoteEditor = ( { route, navigation } ) => {
 
     /* Go Back Logic */
     const handleReturn = async () => {
-        await saveData()
+        if (note.title !== "" && note.content !== ""){
+            await saveData()
+        }
         console.log("Saving note: ", note)
         navigation.goBack()
     }
