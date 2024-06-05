@@ -89,7 +89,7 @@ const NoteEditor = ( { route, navigation } ) => {
     /* Top Navigation Bar */
     useEffect(() => {
         navigation.setOptions({
-            headerTitle: note ? note.title : "New Note",
+            headerTitle: note.title != '' ? note.title : "New Note",
             headerLeft: () => (
                 <TouchableOpacity
                     style={tw`flex flex-row items-center`}
