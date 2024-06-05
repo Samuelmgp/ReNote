@@ -43,7 +43,7 @@ export default function Home ({ navigation }) {
             <MasonryList
                 style={tw`w-full mt-2`}
                 data={items[0]}
-                renderItem={({ item }) => <CardView item={item} />}
+                renderItem={({ item }) => <CardView navigation={navigation} item={item} />}
                 keyExtractor={(item) => item.id}
                 numColumns={2}
             />

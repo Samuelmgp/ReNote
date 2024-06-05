@@ -7,7 +7,7 @@ import { updateContent, updateTitle } from '../components/noteSlice';
 import { ActionCreators } from 'redux-undo';
 import { useAddNoteMutation, useUpdateNoteMutation } from '../db';
 
-export default function NoteEditior ( { navigation } ) {
+export default function NoteEditior ( { navigation, note } ) {
     const dispatch = useDispatch()
     const [ addNote, { data: addNoteData, error: addError, isLoading: addIsLoading } ] = useAddNoteMutation();
     const [ updateNote ] = useUpdateNoteMutation()
@@ -77,6 +77,14 @@ export default function NoteEditior ( { navigation } ) {
     /* Top Navigation Bar */
     useEffect(() => {
         navigation.setOptions({
+            headerTitle: () => (
+                <Text
+                    style={tw`text-lg`}
+                >
+                    {note != undefined ? note.title : "New Note"}
+                </Text>
+                
+            ),
             headerLeft: () => (
                 <TouchableOpacity
                     style={tw`flex flex-row items-center`}
