@@ -3,7 +3,6 @@ import tw from "twrnc";
 
 const CardView = ({ navigation, item }) => {
     const handlePress = () => {
-        console.log(item.id)
         navigation.navigate('Note', {item: item})
     }
 

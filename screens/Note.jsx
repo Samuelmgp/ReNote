@@ -81,7 +81,6 @@ const NoteEditor = ( { route, navigation } ) => {
         if (note.title !== "" && note.content !== ""){
             await saveData()
         }
-        console.log("Saving note: ", note)
         navigation.goBack()
     }
     
@@ -104,9 +103,9 @@ const NoteEditor = ( { route, navigation } ) => {
                     onPress={handleDelete}
                 >
                   <Text style={tw`text-base text-red-600`}>
-                    { note.title == '' ? "Cancel" : "Delete"}
+                    { note.content == '' ? "Cancel" : "Delete"}
                   </Text>
-                    { (note.title != '' || note.content != '') ? (<Icon name='trash' size={25} color={'red'} />) : (<Icon name='close' size={25} color={'red'} />)} 
+                    { (note.content != '') ? (<Icon name='trash' size={25} color={'red'} />) : (<Icon name='close' size={25} color={'red'} />)} 
                 </TouchableOpacity>
                 ),
         });
