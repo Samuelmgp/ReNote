@@ -27,9 +27,9 @@ export default function Home ({ navigation }) {
     }, [navigation])
 
     useEffect(() => {
-        if (fetchedNoteData) {
-            setItems(fetchedNoteData);
-            console.log(fetchedNoteData)
+        if (fetchedNoteData[0]) {
+            setItems(fetchedNoteData[0]);
+            console.log(fetchedNoteData[0])
         }
     }, [fetchedNoteData]);
 
@@ -49,7 +49,7 @@ export default function Home ({ navigation }) {
         );
     }
 
-    return items[0].length > 0 ? (
+    return items.length > 0 ? (
         /* Display this when user has saved notes */
         <View style={tw`h-full justify-center`}>
             <TextInput
@@ -59,7 +59,7 @@ export default function Home ({ navigation }) {
             />
             <MasonryList
                 style={tw`w-full mt-2`}
-                data={items[0]}
+                data={items}
                 renderItem={({ item }) => <CardView navigation={navigation} item={item} />}
                 keyExtractor={(item) => item.id}
                 numColumns={2}
