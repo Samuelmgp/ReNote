@@ -6,6 +6,12 @@ import { Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'reac
 import tw from 'twrnc';
 import Icon from 'react-native-vector-icons/EvilIcons';
 
+const emptyNote = {
+    id: 'base',
+    title: '',
+    content: ''
+}
+
 export default function Home ({ navigation }) {
     const { data: fetchedNoteData, error: fnError, isLoading } = useFetchNotesQuery('');
     const [ clearDatabase, {data: msg, error: e}] = useClearDatabaseMutation();
@@ -27,7 +33,7 @@ export default function Home ({ navigation }) {
     }, [navigation])
 
     useEffect(() => {
-        if (fetchedNoteData[0]) {
+        if (fetchedNoteData && fetchedNoteData[0]) {
             setItems(fetchedNoteData[0]);
             console.log(fetchedNoteData[0])
         }
@@ -66,7 +72,7 @@ export default function Home ({ navigation }) {
             />
             <TouchableOpacity
                 style={tw`rounded-4 bg-blue-500 absolute bottom-8 right-8 justify-center w-15 h-15 mx-auto`}
-                onPress={() => navigation.navigate('New Note')}
+                onPress={() => navigation.navigate('Note', {item: emptyNote})}
             >
                 <Text style={tw`text-5xl text-center align-middle text-white mt-1`}>+</Text>
             </TouchableOpacity>
@@ -79,7 +85,7 @@ export default function Home ({ navigation }) {
             </Text>
             <TouchableOpacity 
                 style={tw`w-32 py-2 rounded-lg bg-blue-500 self-center`}
-                onPress={() => navigation.navigate('New Note')}
+                onPress={() => navigation.navigate('Note', {item: emptyNote})}
             >
                 <Text style={tw`text-center text-white`}>
                     Create Note

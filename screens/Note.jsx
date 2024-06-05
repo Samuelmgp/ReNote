@@ -5,20 +5,24 @@ import tw from 'twrnc';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateContent, updateTitle } from '../components/noteSlice';
 import { ActionCreators } from 'redux-undo';
-import { useAddNoteMutation, useUpdateNoteMutation } from '../db';
+import { useAddNoteMutation, useUpdateNoteMutation, useDeleteNoteMutation } from '../db';
 
-export default function NoteEditior ( { navigation, note } ) {
+const NoteEditor = ( { route, navigation } ) => {
+
+    const note = route.params.item;
+
     const dispatch = useDispatch()
     const [ addNote, { data: addNoteData, error: addError, isLoading: addIsLoading } ] = useAddNoteMutation();
-    const [ updateNote ] = useUpdateNoteMutation()
+    const [ updateNote, {data: updatedNoteData, error: updateError} ] = useUpdateNoteMutation()
+    const [ deleteNote, {data: deletedNoteData, error: deleteError} ] = useDeleteNoteMutation()
     
     /*
     const undoableTitle = useSelector(state => state.note.present.title)
     const undoableContent = useSelector(state => state.note.present.content)
     */
 
-    const [title, setTitle] = useState('')
-    const [content, setContent] = useState('')
+    const [title, setTitle] = useState(note.title)
+    const [content, setContent] = useState(note.content)
 
     const [isFocused, setFocus] = useState(false);
     const [isKeyboardVisible, setKeyboardVisability] = useState(false);
@@ -30,11 +34,16 @@ export default function NoteEditior ( { navigation, note } ) {
         dispatch(updateTitle(title))
         dispatch(updateContent(content)) 
         */
-        if (addNoteData == undefined && (title !== '' || content !== '')){
-            console.log("Values: ",title, "|", content)
-            console.log("Creating new Note!")
-            addNote({title: title, content: content})
-            console.log( addNoteData ? `${addNoteData.id} | ${addNoteData.title} | ${addNoteData.content}` : `Failed! ${addError}`)
+        if (note.id === "base" && (title !== '' || content !== '')){
+            const date = new Date()
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            addNote({title: title, content: content, created: `${month}-${day}-${year}`})
+        } else if (title !== '' || content !== ''){
+            console.log("Updating: ", title, content, note.id)
+            updateNote({id: note.id, created: note.created, content: content, title: title})
         }
     }
 
@@ -71,26 +80,16 @@ export default function NoteEditior ( { navigation, note } ) {
         }
     }, [])
 
-    /* Navigation Undo Button Logic */
-    const handleUndo = () => {
-        dispatch(ActionCreators.undo())
-        /*
-        setTitle(undoableTitle)
-        setContent(undoableContent)
-        */
+    /* Delete Note Logic */
+    const handleDelete = () => {
+        deleteNote(note)
+        navigation.goBack()
     }
     
     /* Top Navigation Bar */
     useEffect(() => {
         navigation.setOptions({
-            headerTitle: () => (
-                <Text
-                    style={tw`text-lg`}
-                >
-                    {note != undefined ? note.title : "New Note"}
-                </Text>
-                
-            ),
+            headerTitle: note ? note.title : "New Note",
             headerLeft: () => (
                 <TouchableOpacity
                     style={tw`flex flex-row items-center`}
@@ -99,17 +98,18 @@ export default function NoteEditior ( { navigation, note } ) {
                     <Icon name='chevron-left' size={35} color={'blue'} />
                     <Text style={tw`text-base text-blue-600`}>My Notes</Text>
                 </TouchableOpacity>
-            ),/*
+            ),
             headerRight: () => (
-            <TouchableOpacity 
-                style={tw`flex flex-row gap-x-1 items-center`}
-                onPress={handleUndo}
-            >
-              <Text style={tw`text-base text-red-600`}>Undo</Text>
-              <Icon name='undo' size={25} color={'red'} />
-            </TouchableOpacity>
-            ), */
+                <TouchableOpacity 
+                    style={tw`flex flex-row gap-x-1 items-center`}
+                    onPress={handleDelete}
+                >
+                  <Text style={tw`text-base text-red-600`}>Delete</Text>
+                  <Icon name='trash' size={25} color={'red'} />
+                </TouchableOpacity>
+                ),
         });
+
     }, [navigation])
 
 
@@ -140,3 +140,5 @@ export default function NoteEditior ( { navigation, note } ) {
             </View>
     )
 }
+
+export default NoteEditor;
