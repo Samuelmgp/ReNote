@@ -2,61 +2,41 @@ import { Text, View, Keyboard, TextInput, TouchableOpacity } from 'react-native'
 import { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/EvilIcons'
 import tw from 'twrnc';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateContent, updateTitle } from '../components/noteSlice';
-import { ActionCreators } from 'redux-undo';
 import { useAddNoteMutation, useUpdateNoteMutation, useDeleteNoteMutation } from '../db';
 
 const NoteEditor = ( { route, navigation } ) => {
 
-    const note = route.params.item;
+    const date = new Date()
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
 
-    const dispatch = useDispatch()
-    const [ addNote, { data: newNote, error: addError, isLoading: addIsLoading } ] = useAddNoteMutation();
-    const [ updateNote, {data: updatedNoteData, error: updateError} ] = useUpdateNoteMutation()
-    const [ deleteNote, {data: deletedNoteData, error: deleteError} ] = useDeleteNoteMutation()
+    const [ addNote ] = useAddNoteMutation();
+    const [ updateNote ] = useUpdateNoteMutation()
+    const [ deleteNote ] = useDeleteNoteMutation()
     
-    /*
-    const undoableTitle = useSelector(state => state.note.present.title)
-    const undoableContent = useSelector(state => state.note.present.content)
-    */
-
+    const  initialNote = route.params ? route.params.item : {title: '', content: '', created: `${month}-${day}-${year}`}
+    const [note, setNote] = useState(initialNote)
     const [title, setTitle] = useState(note.title)
     const [content, setContent] = useState(note.content)
 
     const [isFocused, setFocus] = useState(false);
     const [isKeyboardVisible, setKeyboardVisability] = useState(false);
 
-    /* For Done Button OnPress */
-    const handleFinish = () => {
-        Keyboard.dismiss()
-        /*
-        dispatch(updateTitle(title))
-        dispatch(updateContent(content)) 
-        */
-        if (note.id === "base" && newNote == undefined && (title !== '' || content !== '')){
-            const date = new Date()
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-
-            addNote({title: title, content: content, created: `${month}-${day}-${year}`})
-        } else if (note.id !== "base" && (title !== '' || content !== '')){
-            updateNote({id: note.id, created: note.created, content: content, title: title})
-        } else if (newNote && (title !== '' || content !== '')){
-            updateNote({id: newNote.id, created: newNote.created, content: content, title: title})
-        }
-    }
-
     /* Saving Note Data */
-    
+    const saveData = async () => {
+        note.id ?
+            await updateNote(note) 
+            :
+            await addNote(note)
+    }
 
     /* Done Button UI Component Single Use */
     const DoneButton = () => {
         return (
                 <TouchableOpacity
                     style={tw`flex-initial h-10 rounded-lg justify-center bg-blue-400`}
-                    onPress={handleFinish}
+                    onPress={Keyboard.dismiss}
                 >
                     <Text style={tw`text-white text-center text-center`}>
                         Done
@@ -82,8 +62,24 @@ const NoteEditor = ( { route, navigation } ) => {
     }, [])
 
     /* Delete Note Logic */
-    const handleDelete = () => {
-        newNote ? deleteNote(newNote) : deleteNote(note)
+    const handleDelete = async () => {
+        await deleteNote(note)
+        navigation.goBack()
+    }
+    /* Sync Note */
+    useEffect(() => {
+        setNote({
+            id: note.id,
+            title: title,
+            content: content,
+            created: note.created
+        })
+    }, [title, content])
+
+    /* Go Back Logic */
+    const handleReturn = async () => {
+        await saveData()
+        console.log("Saving note: ", note)
         navigation.goBack()
     }
     
@@ -94,7 +90,7 @@ const NoteEditor = ( { route, navigation } ) => {
             headerLeft: () => (
                 <TouchableOpacity
                     style={tw`flex flex-row items-center`}
-                    onPress={navigation.goBack}
+                    onPress={handleReturn}
                 >
                     <Icon name='chevron-left' size={35} color={'blue'} />
                     <Text style={tw`text-base text-blue-600`}>My Notes</Text>
@@ -106,15 +102,14 @@ const NoteEditor = ( { route, navigation } ) => {
                     onPress={handleDelete}
                 >
                   <Text style={tw`text-base text-red-600`}>
-                    { (note.id ===  "base" && newNote === undefined) ? "Cancel" : "Delete"}
+                    { note.title == '' ? "Cancel" : "Delete"}
                   </Text>
-                    { (note.id ===  "base" && newNote === undefined) && <Icon name='close' size={25} color={'red'} />} 
-                    { (note.id !==  "base" || newNote !== undefined) && <Icon name='trash' size={25} color={'red'} />}
+                    { (note.title != '' || note.content != '') ? (<Icon name='trash' size={25} color={'red'} />) : (<Icon name='close' size={25} color={'red'} />)} 
                 </TouchableOpacity>
                 ),
         });
 
-    }, [navigation, note, newNote])
+    }, [navigation, note])
 
 
     /* UI Portion */
@@ -128,7 +123,7 @@ const NoteEditor = ( { route, navigation } ) => {
                         returnKeyType='done'
                         placeholder='Title'
                         value={title}
-                        onChangeText={(title) => setTitle(title)}
+                        onChangeText={(title) => {setTitle(title)}}
                     />  
                 
                     <TextInput
@@ -136,7 +131,7 @@ const NoteEditor = ( { route, navigation } ) => {
                         placeholder='The start of a new note...'
                         multiline={true}
                         value={content}
-                        onChangeText={(content) => setContent(content)}
+                        onChangeText={(content) => {setContent(content)}}
                         onFocus={() => setFocus(true)}
                         onBlur={() => setFocus(false)}
                     /> 
