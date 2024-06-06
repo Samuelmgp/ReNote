@@ -191,6 +191,7 @@ const NoteEditor = ( { route, navigation } ) => {
                     */}
                 {isFocused && <DoneButton />}
                 {!note.id && <ColorPicker color={color} setColor={setColor} />}
+                {note.id && <ColorPicker color={color} />}
             </View>
     )
 }

@@ -4,7 +4,7 @@ import tw from "twrnc";
 
 const ColorPicker = ( {color, setColor} ) => {
 
-    return (
+    return setColor ? (
         <View style={tw`flex flex-col justify-center pb-10`}>
             <View style={tw`flex flex-row items-center p-3 gap-x-2`}>
                 <Text style={tw`text-gray-600`}>
@@ -31,6 +31,8 @@ const ColorPicker = ( {color, setColor} ) => {
                 />
             </View>
         </View>
+    ) : (
+        <View style={tw`rounded-2 ${color} w-full h-10 mb-5`}/>
     )
 }
 
