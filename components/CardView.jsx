@@ -8,7 +8,7 @@ const CardView = ({ navigation, item }) => {
 
     return item ? (
         <TouchableOpacity 
-            style={tw`flex flex-col bg-yellow-200 rounded-md m-[2%]`}
+            style={tw`flex flex-col ${item.color} rounded-md m-[2%]`}
             onPress={handlePress}
         >
             <Text style={tw`text-lg text-black font-bold px-3 pt-2`}>

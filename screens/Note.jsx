@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/EvilIcons'
 import tw from 'twrnc';
 import { useAddNoteMutation, useUpdateNoteMutation, useDeleteNoteMutation } from '../db';
+import ColorPicker from '../components/ColorPicker';
 
 const NoteEditor = ( { route, navigation } ) => {
 
@@ -11,14 +12,15 @@ const NoteEditor = ( { route, navigation } ) => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
 
-    const [ addNote ] = useAddNoteMutation();
-    const [ updateNote ] = useUpdateNoteMutation()
+    const [ addNote, {data: newNote} ] = useAddNoteMutation();
+    const [ updateNote, {data: updatedNote}  ] = useUpdateNoteMutation()
     const [ deleteNote ] = useDeleteNoteMutation()
     
-    const  initialNote = route.params ? route.params.item : {title: '', content: '', created: `${month}-${day}-${year}`}
+    const  initialNote = route.params ? route.params.item : {title: '', content: '', color: "bg-yellow-200", created: `${month}-${day}-${year}`}
     const [note, setNote] = useState(initialNote)
     const [title, setTitle] = useState(note.title)
     const [content, setContent] = useState(note.content)
+    const [color, setColor] = useState(note.color)
 
     const [isFocused, setFocus] = useState(false);
     const [isKeyboardVisible, setKeyboardVisability] = useState(false);
@@ -80,9 +82,10 @@ const NoteEditor = ( { route, navigation } ) => {
             id: note.id,
             title: (title === "" ? "Untitled Note" : title),
             content: content,
+            color: color,
             created: note.created
         })
-    }, [title, content])
+    }, [title, content, color])
 
     /* Go Back Logic */
     const handleReturn = async () => {
@@ -164,7 +167,7 @@ const NoteEditor = ( { route, navigation } ) => {
                 style={tw`flex flex-col justify-center gap-y-1 p-3 ${isKeyboardVisible || isFocused ? 'h-[55%]' : 'h-full'}`}
             > 
                     <TextInput 
-                        style={tw`flex-initial h-10 rounded-lg px-4`}
+                        style={tw`flex-initial h-10 rounded-lg px-4 bg-gray-200`}
                         returnKeyType='done'
                         placeholder='Title'
                         value={title}
@@ -172,7 +175,7 @@ const NoteEditor = ( { route, navigation } ) => {
                     />  
                 
                     <TextInput
-                        style={tw`flex-1 rounded-lg px-4`}
+                        style={tw`flex-1 rounded-lg px-4 bg-gray-200`}
                         placeholder='The start of a new note...'
                         multiline={true}
                         value={content}
@@ -187,6 +190,7 @@ const NoteEditor = ( { route, navigation } ) => {
                     of the return key, so I made a custome button for this
                     */}
                 {isFocused && <DoneButton />}
+                {!note.id && <ColorPicker color={color} setColor={setColor} />}
             </View>
     )
 }
